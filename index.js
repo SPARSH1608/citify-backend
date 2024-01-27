@@ -86,35 +86,32 @@ app.post('/register', async (req, res) => {
     res.status(400).json(error);
   }
 });
-
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
   const userDoc = await User.findOne({ username: username });
+
+  if (!userDoc) {
+    return res.status(400).json({ message: 'User not found' });
+  }
+
   const passOK = bcrypt.compareSync(password, userDoc.password);
-  // let passOK = false;
-  // const passOK = bcrypt.compare(
-  //   password,
-  //   userDoc.password,
-  //   function (err, result) {
-  //     return result;
-  //   }
-  // );
-  // res.json({ passOK });
+
   if (passOK) {
-    //correct password
+    // Correct password
     jwt.sign({ username, id: userDoc._id }, secret, {}, (err, token) => {
       if (err) {
-        throw new Error({ message: 'No token' });
+        console.error('Error signing JWT:', err);
+        return res.status(500).json({ message: 'Internal Server Error' });
       }
+
       res
         .cookie('token', token)
         .json({ id: userDoc._id, username: userDoc.username });
     });
   } else {
-    res.status(400).json('Wrong creditentals');
+    res.status(400).json({ message: 'Wrong credentials' });
   }
 });
-
 app.get('/profile', (req, res) => {
   const { token } = req.cookies;
   jwt.verify(token, secret, (err, decoded) => {

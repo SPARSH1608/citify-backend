@@ -13,6 +13,17 @@ const multer = require('multer');
 const uploadMiddlerWare = multer({ dest: 'uploads/' });
 const fs = require('fs');
 const Post = require('./models/Post');
+const allowMethods = ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'];
+const allowHeaders = [
+  'Content-Type',
+  'Authorization',
+  'X-Content-Type-Options',
+  'Accept',
+  'X-Requested-With',
+  'Origin',
+  'Access-Control-Request-Method',
+  'Access-Control-Request-Headers',
+];
 
 app.use(
   cors({

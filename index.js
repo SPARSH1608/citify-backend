@@ -120,11 +120,13 @@ app.get('/profile', (req, res) => {
 
   jwt.verify(token, secret, {}, (err, info) => {
     if (err) {
-      throw new Error({ message: 'invalid token' });
+      // Respond with a 401 Unauthorized status if the token is invalid
+      return res.status(401).json({ error: 'Invalid token' });
     }
+
+    // If the token is valid, send the decoded information
     res.json({ info });
   });
-  // res.json(req.cookies);
 });
 
 app.post('/logout', (req, res) => {

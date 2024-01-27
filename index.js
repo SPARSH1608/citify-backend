@@ -20,9 +20,7 @@ app.use(cookieParser()); //to parse cookie
 app.use('/uploads', express.static(__dirname + '/uploads'));
 const salt = bcrypt.genSaltSync(10);
 
-mongoose.connect(
-  'mongodb+srv://sparshgoelk:tqYXRYqpA4fzocby@cluster0.kkogtln.mongodb.net/?retryWrites=true&w=majority'
-);
+mongoose.connect(process.env.MONGO_URL);
 
 // const start = async () => {
 //   try {

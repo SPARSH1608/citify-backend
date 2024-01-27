@@ -14,12 +14,17 @@ const uploadMiddlerWare = multer({ dest: 'uploads/' });
 const fs = require('fs');
 const Post = require('./models/Post');
 
-app.use(cors({ credentials: true, origin: 'http://localhost:5173' }));
+app.use(
+  cors({
+    credentials: true,
+    origin: 'https://citify.onrender.com',
+  })
+);
 app.use(express.json()); // to get req bbdoy
 app.use(cookieParser()); //to parse cookie
 app.use('/uploads', express.static(__dirname + '/uploads'));
 const salt = bcrypt.genSaltSync(10);
-
+app.options('*', cors());
 mongoose.connect(process.env.MONGO_URL);
 
 // const start = async () => {

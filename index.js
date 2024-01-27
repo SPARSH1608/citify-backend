@@ -28,7 +28,7 @@ const allowHeaders = [
 app.use(
   cors({
     credentials: true,
-    origin: 'http://localhost:5173',
+    origin: 'https://citify-7fz0smhz6-sparsh1608.vercel.app',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders:
       'Content-Type, Authorization, X-Content-Type-Options, Accept, X-Requested-With, Origin, Access-Control-Request-Method, Access-Control-Request-Headers',
@@ -37,7 +37,7 @@ app.use(
 app.options('*', (req, res) => {
   console.log('preflight');
   if (
-    req.headers.origin === 'http://localhost:5173' &&
+    req.headers.origin === 'https://citify-7fz0smhz6-sparsh1608.vercel.app' &&
     allowMethods.includes(req.headers['access-control-request-method']) &&
     allowHeaders.includes(req.headers['access-control-request-headers'])
   ) {

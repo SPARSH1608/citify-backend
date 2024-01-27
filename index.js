@@ -43,7 +43,7 @@ const salt = bcrypt.genSaltSync(10);
 app.options('*', cors());
 mongoose.connect(process.env.MONGO_URL);
 const corsOptions = {
-  origin: 'https://your-frontend.com',
+  origin: ' http://localhost:5173',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
 };
 app.use(cors(corsOptions));

@@ -177,52 +177,52 @@ app.get('/post/:id', async (req, res) => {
   res.json(post);
 });
 
-app.post('/post/:id', uploadMiddlerWare.single('file'), async (req, res) => {
-  try {
-    let newPath = null;
-    if (req.file) {
-      const { originalname, path } = req.file;
+// app.post('/post/:id', uploadMiddlerWare.single('file'), async (req, res) => {
+//   try {
+//     let newPath = null;
+//     if (req.file) {
+//       const { originalname, path } = req.file;
 
-      const parts = originalname.split('.');
-      const ext = parts[parts.length - 1];
-      const newPath = path + '.' + ext;
-      fs.renameSync(path, path + '.' + ext);
-    }
-    const { token } = req.cookies;
-    jwt.verify(token, secret, {}, async (err, info) => {
-      if (err) {
-        throw new Error({ message: 'invalid token' });
-      }
-      const { id, title, summary, content, support } = req.body;
-      const postDoc = await Post.findById(id);
-      const isAuthor =
-        JSON.stringify(postDoc.author) === JSON.stringify(info.id);
-      // const postDoc = await Post.create({
-      //   title,
-      //   summary,
-      //   content,
-      //   cover: newPath,
-      //   author: info.i
-      if (!isAuthor) {
-        res.status(400).json('Invalid Author');
-        throw new Error({ message: 'Invalid Author' });
-      }
-      await postDoc.updateOne({
-        title,
-        summary,
-        content,
-        cover: newPath ? newPath : postDoc.cover,
-        support,
-      });
+//       const parts = originalname.split('.');
+//       const ext = parts[parts.length - 1];
+//       const newPath = path + '.' + ext;
+//       fs.renameSync(path, path + '.' + ext);
+//     }
+//     const { token } = req.cookies;
+//     jwt.verify(token, secret, {}, async (err, info) => {
+//       if (err) {
+//         throw new Error({ message: 'invalid token' });
+//       }
+//       const { id, title, summary, content, support } = req.body;
+//       const postDoc = await Post.findById(id);
+//       const isAuthor =
+//         JSON.stringify(postDoc.author) === JSON.stringify(info.id);
+//       // const postDoc = await Post.create({
+//       //   title,
+//       //   summary,
+//       //   content,
+//       //   cover: newPath,
+//       //   author: info.i
+//       if (!isAuthor) {
+//         res.status(400).json('Invalid Author');
+//         throw new Error({ message: 'Invalid Author' });
+//       }
+//       await postDoc.updateOne({
+//         title,
+//         summary,
+//         content,
+//         cover: newPath ? newPath : postDoc.cover,
+//         support,
+//       });
 
-      res.json(postDoc);
-    });
+//       res.json(postDoc);
+//     });
 
-    // res.status(200).json({ text: 4, files: req.file });
-  } catch (error) {
-    console.log(error);
-  }
-});
+//     // res.status(200).json({ text: 4, files: req.file });
+//   } catch (error) {
+//     console.log(error);
+//   }
+// });
 app.put('/postt/:id', uploadMiddlerWare.single('file'), async (req, res) => {
   try {
     let newPath = null;

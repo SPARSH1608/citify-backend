@@ -87,29 +87,35 @@ app.post('/register', async (req, res) => {
   }
 });
 app.post('/login', async (req, res) => {
-  const { username, password } = req.body;
-  const userDoc = await User.findOne({ username: username });
+  try {
+    const { username, password } = req.body;
+    const userDoc = await User.findOne({ username: username });
 
-  if (!userDoc) {
-    return res.status(400).json({ message: 'User not found' });
-  }
+    if (!userDoc) {
+      return res.status(400).json({ message: 'User not found' });
+    }
 
-  const passOK = bcrypt.compareSync(password, userDoc.password);
+    const passOK = bcrypt.compareSync(password, userDoc.password);
 
-  if (passOK) {
-    // Correct password
-    jwt.sign({ username, id: userDoc._id }, secret, {}, (err, token) => {
-      if (err) {
-        console.error('Error signing JWT:', err);
-        return res.status(500).json({ message: 'Internal Server Error' });
-      }
+    if (passOK) {
+      // Correct password
+      const token = jwt.sign({ username, id: userDoc._id }, secret, {
+        expiresIn: '1h',
+      });
 
       res
-        .cookie('token', token)
+        .cookie('token', token, {
+          httpOnly: true,
+          secure: true,
+          sameSite: 'None',
+        })
         .json({ id: userDoc._id, username: userDoc.username });
-    });
-  } else {
-    res.status(400).json({ message: 'Wrong credentials' });
+    } else {
+      res.status(400).json({ message: 'Wrong credentials' });
+    }
+  } catch (error) {
+    console.error('Error during login:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 });
 app.get('/profile', (req, res) => {

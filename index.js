@@ -177,7 +177,7 @@ app.get('/post/:id', async (req, res) => {
   res.json(post);
 });
 
-app.put('/post/:id', uploadMiddlerWare.single('file'), async (req, res) => {
+app.post('/post/:id', uploadMiddlerWare.single('file'), async (req, res) => {
   try {
     let newPath = null;
     if (req.file) {

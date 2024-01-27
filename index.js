@@ -36,6 +36,19 @@ app.use(
     origin: ' http://localhost:5173',
   })
 );
+app.options('*', (req, res) => {
+  console.log('preflight');
+  if (
+    req.headers.origin === 'http://localhost:5173' &&
+    allowMethods.includes(req.headers['access-control-request-method']) &&
+    allowHeaders.includes(req.headers['access-control-request-headers'])
+  ) {
+    console.log('pass');
+    return res.status(204).send();
+  } else {
+    console.log('fail');
+  }
+});
 app.use(express.json()); // to get req bbdoy
 app.use(cookieParser()); //to parse cookie
 app.use('/uploads', express.static(__dirname + '/uploads'));

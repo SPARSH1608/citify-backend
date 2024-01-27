@@ -55,17 +55,6 @@ const salt = bcrypt.genSaltSync(10);
 
 mongoose.connect(process.env.MONGO_URL);
 
-// const start = async () => {
-//   try {
-//     await Connectdb(process.env.MONGO_URI);
-//     app.listen(4000, (PORT) => {
-//       console.log('server is listening on port 4000');
-//     });
-//   } catch (error) {
-//     console.log('error');
-//   }
-// };
-
 app.listen(process.env.PORT, (PORT) => {
   console.log('server is running');
 });
@@ -202,19 +191,10 @@ app.put('/postt/:id', uploadMiddlerWare.single('file'), async (req, res) => {
       }
       const { id, title, summary, content, support } = req.body;
       const postDoc = await Post.findById(id);
-      console.log(postDoc);
-      // const isAuthor =
-      //   JSON.stringify(postDoc.author) === JSON.stringify(info.id);
-      // const postDoc = await Post.create({
-      //   title,
-      //   summary,
-      //   content,
-      //   cover: newPath,
-      //   author: info.i
-      // if (!isAuthor) {
-      //   res.status(400).json('Invalid Author');
-      //   throw new Error({ message: 'Invalid Author' });
-      // }
+      if (!postDoc) {
+        return res.status(404).json({ error: 'Post not found' });
+      }
+
       await postDoc.updateOne({
         title,
         summary,
@@ -225,9 +205,8 @@ app.put('/postt/:id', uploadMiddlerWare.single('file'), async (req, res) => {
       console.log(postDoc);
       res.json(postDoc);
     });
-
-    // res.status(200).json({ text: 4, files: req.file });
   } catch (error) {
-    console.log('Error while updating post');
+    console.error('Error while updating post:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });

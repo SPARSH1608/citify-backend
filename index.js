@@ -148,6 +148,7 @@ app.post('/post', uploadMiddlerWare.single('file'), async (req, res) => {
         throw new Error({ message: 'invalid token' });
       }
       const { title, summary, content } = req.body;
+      console.log(title, summary, content, newPath, info.id);
       const postDoc = await Post.create({
         title,
         summary,
@@ -155,11 +156,14 @@ app.post('/post', uploadMiddlerWare.single('file'), async (req, res) => {
         cover: newPath,
         author: info.id,
       });
+      console.log(postDoc);
       res.json(postDoc);
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res
+      .status(500)
+      .json({ error: 'Internal Server Error while creating post' });
   }
 });
 
@@ -241,6 +245,7 @@ app.put('/postt/:id', uploadMiddlerWare.single('file'), async (req, res) => {
       }
       const { id, title, summary, content, support } = req.body;
       const postDoc = await Post.findById(id);
+      console.log(postDoc);
       // const isAuthor =
       //   JSON.stringify(postDoc.author) === JSON.stringify(info.id);
       // const postDoc = await Post.create({
@@ -260,12 +265,12 @@ app.put('/postt/:id', uploadMiddlerWare.single('file'), async (req, res) => {
         cover: newPath ? newPath : postDoc.cover,
         support,
       });
-
+      console.log(postDoc);
       res.json(postDoc);
     });
 
     // res.status(200).json({ text: 4, files: req.file });
   } catch (error) {
-    console.log(error);
+    console.log('Error while updating post');
   }
 });

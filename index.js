@@ -25,15 +25,34 @@ const allowHeaders = [
   'Access-Control-Request-Headers',
 ];
 
-const corsOptions = {
-  credentials: true,
-  origin: 'https://citify-7fz0smhz6-sparsh1608.vercel.app',
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  allowedHeaders:
-    'Content-Type, Authorization, X-Content-Type-Options, Accept, X-Requested-With, Origin, Access-Control-Request-Method, Access-Control-Request-Headers',
-};
-
-app.use(cors(corsOptions));
+app.use(
+  cors({
+    credentials: true,
+    origin: 'https://citify-p57hkgn8c-sparsh1608.vercel.app',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders:
+      'Content-Type, Authorization, X-Content-Type-Options, Accept, X-Requested-With, Origin, Access-Control-Request-Method, Access-Control-Request-Headers',
+  })
+);
+app.options('*', (req, res) => {
+  console.log('preflight');
+  if (
+    req.headers.origin === 'https://citify-p57hkgn8c-sparsh1608.vercel.app' &&
+    allowMethods.includes(req.headers['access-control-request-method']) &&
+    allowHeaders.includes(req.headers['access-control-request-headers'])
+  ) {
+    console.log('pass');
+    return res.status(204).send();
+  } else {
+    console.log('fail');
+  }
+});
+app.use(
+  cors({
+    credentials: true,
+    origin: 'https://citify-p57hkgn8c-sparsh1608.vercel.app',
+  })
+);
 
 app.use(express.json()); // to get req bbdoy
 app.use(cookieParser()); //to parse cookie

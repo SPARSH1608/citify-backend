@@ -117,15 +117,13 @@ app.post('/login', async (req, res) => {
 
 app.get('/profile', (req, res) => {
   const { token } = req.cookies;
-
-  jwt.verify(token, secret, {}, (err, info) => {
+  jwt.verify(token, secret, (err, decoded) => {
     if (err) {
-      // Respond with a 401 Unauthorized status if the token is invalid
+      console.error('Error verifying token:', err);
       return res.status(401).json({ error: 'Invalid token' });
     }
 
-    // If the token is valid, send the decoded information
-    res.json({ info });
+    res.json({ info: decoded });
   });
 });
 

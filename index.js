@@ -115,14 +115,16 @@ app.post('/login', async (req, res) => {
 });
 app.get('/profile', (req, res) => {
   const { token } = req.cookies;
-  jwt.verify(token, secret, (err, decoded) => {
-    if (err) {
-      console.error('Error verifying token:', err);
-      return res.status(401).json({ error: 'Invalid token' });
-    }
+  if (token) {
+    jwt.verify(token, secret, (err, decoded) => {
+      if (err) {
+        console.error('Error verifying token:', err);
+        return res.status(401).json({ error: 'Invalid token' });
+      }
 
-    res.json({ info: decoded });
-  });
+      res.json({ info: decoded });
+    });
+  }
 });
 
 app.post('/logout', (req, res) => {

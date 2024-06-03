@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const mongoose = require('mongoose');
+// const connectToDatabase = require('./db/connect');
 const Connectdb = require('./db/connect');
 require('dotenv').config();
 const User = require('./models/User');
@@ -168,11 +169,27 @@ app.post('/post', uploadMiddlerWare.single('file'), async (req, res) => {
 });
 
 app.get('/post', async (req, res) => {
-  const posts = await Post.find()
-    .populate('author', ['username'])
-    .sort({ createdAt: -1 })
-    .limit(20);
-  res.json(posts);
+  try {
+    const { sortOption } = req.query;
+
+    let sortCriteria = { createdAt: -1 }; // Default sorting by date (latest to old)
+
+    if (sortOption === 'dateAsc') {
+      sortCriteria = { createdAt: 1 }; // Sorting by date ascending
+    } else if (sortOption === 'alphabetical') {
+      sortCriteria = { title: 1 }; // Sorting alphabetically by post title
+    }
+
+    const posts = await Post.find()
+      .populate('author', ['username'])
+      .sort(sortCriteria)
+      .limit(20);
+
+    res.json(posts);
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 app.get('/post/:id', async (req, res) => {

@@ -60,7 +60,9 @@ app.use(cookieParser()); //to parse cookie
 app.use('/uploads', express.static(__dirname + '/uploads'));
 const salt = bcrypt.genSaltSync(10);
 
-mongoose.connect(process.env.MONGO_URL);
+mongoose.connect(
+  'mongodb+srv://sparshgoelk:HDQeNPC0ZFvEWnep@cluster0.kkogtln.mongodb.net/citify?retryWrites=true&w=majority'
+);
 
 app.listen(process.env.PORT, (PORT) => {
   console.log('server is running');

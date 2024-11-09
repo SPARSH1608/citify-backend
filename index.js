@@ -29,7 +29,8 @@ const allowHeaders = [
 app.use(
   cors({
     credentials: true,
-    origin: 'https://citify-frontend.vercel.app',
+    origin:
+      'https://citify-frontend-jvme-p41yueihu-sparsh1608s-projects.vercel.app/',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders:
       'Content-Type, Authorization, X-Content-Type-Options, Accept, X-Requested-With, Origin, Access-Control-Request-Method, Access-Control-Request-Headers',
@@ -38,7 +39,8 @@ app.use(
 app.options('*', (req, res) => {
   console.log('preflight');
   if (
-    req.headers.origin === 'https://citify-frontend.vercel.app' &&
+    req.headers.origin ===
+      'https://citify-frontend-jvme-p41yueihu-sparsh1608s-projects.vercel.app/' &&
     allowMethods.includes(req.headers['access-control-request-method']) &&
     allowHeaders.includes(req.headers['access-control-request-headers'])
   ) {
@@ -51,7 +53,8 @@ app.options('*', (req, res) => {
 app.use(
   cors({
     credentials: true,
-    origin: 'https://citify-frontend.vercel.app',
+    origin:
+      'https://citify-frontend-jvme-p41yueihu-sparsh1608s-projects.vercel.app/',
   })
 );
 

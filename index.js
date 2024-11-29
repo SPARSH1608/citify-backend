@@ -1,75 +1,36 @@
 const express = require('express');
 const cors = require('cors');
-const app = express();
 const mongoose = require('mongoose');
-// const connectToDatabase = require('./db/connect');
-const Connectdb = require('./db/connect');
-require('dotenv').config();
 const User = require('./models/User');
+const Post = require('./models/Post');
 const bcrypt = require('bcrypt');
+const app = express();
 const jwt = require('jsonwebtoken');
-const secret = process.env.SECRET_KEY;
 const cookieParser = require('cookie-parser');
 const multer = require('multer');
 const uploadMiddleware = multer({ dest: 'uploads/' });
 const fs = require('fs');
-const Post = require('./models/Post');
-const allowMethods = ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'];
-const allowHeaders = [
-  'Content-Type',
-  'Authorization',
-  'X-Content-Type-Options',
-  'Accept',
-  'X-Requested-With',
-  'Origin',
-  'Access-Control-Request-Method',
-  'Access-Control-Request-Headers',
-];
+
+const salt = bcrypt.genSaltSync(10);
+const secret = 'asdfe45we45w345wegw345werjktjwertkj';
 
 app.use(
   cors({
     credentials: true,
-    origin:
-      'https://citify-frontend-jvme-p41yueihu-sparsh1608s-projects.vercel.app',
+    origin: 'http://localhost:5173',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders:
       'Content-Type, Authorization, X-Content-Type-Options, Accept, X-Requested-With, Origin, Access-Control-Request-Method, Access-Control-Request-Headers',
   })
 );
-app.options('*', (req, res) => {
-  console.log('preflight');
-  if (
-    req.headers.origin ===
-      'https://citify-frontend-jvme-p41yueihu-sparsh1608s-projects.vercel.app' &&
-    allowMethods.includes(req.headers['access-control-request-method']) &&
-    allowHeaders.includes(req.headers['access-control-request-headers'])
-  ) {
-    console.log('pass');
-    return res.status(204).send();
-  } else {
-    console.log('fail');
-  }
-});
-app.use(
-  cors({
-    credentials: true,
-    origin:
-      'https://citify-frontend-jvme-p41yueihu-sparsh1608s-projects.vercel.app',
-  })
-);
 
-app.use(express.json()); // to get req bbdoy
-app.use(cookieParser()); //to parse cookie
+app.use(express.json());
+app.use(cookieParser());
 app.use('/uploads', express.static(__dirname + '/uploads'));
-const salt = bcrypt.genSaltSync(10);
 
 mongoose.connect(
   'mongodb+srv://sparshgoelk:8dpl7GIr9wAGvtfO@cluster0.kkogtln.mongodb.net/citify?retryWrites=true&w=majority'
 );
-
-app.listen(process.env.PORT, (PORT) => {
-  console.log('server is running');
-});
 
 app.post('/register', async (req, res) => {
   const { username, password } = req.body;
@@ -105,8 +66,13 @@ app.post('/login', async (req, res) => {
 
 app.get('/profile', (req, res) => {
   const { token } = req.cookies;
+  if (!token) {
+    return res.status(401).json({ error: 'Token not provided' });
+  }
   jwt.verify(token, secret, {}, (err, info) => {
-    if (err) throw err;
+    if (err) {
+      return res.status(401).json({ error: 'Invalid token' });
+    }
     res.json(info);
   });
 });
@@ -149,20 +115,25 @@ app.put('/post', uploadMiddleware.single('file'), async (req, res) => {
 
   const { token } = req.cookies;
   jwt.verify(token, secret, {}, async (err, info) => {
-    if (err) throw err;
+    if (err) return res.status(401).json({ error: 'Invalid token' });
+
     const { id, title, summary, content } = req.body;
     const postDoc = await Post.findById(id);
     const isAuthor = JSON.stringify(postDoc.author) === JSON.stringify(info.id);
-    if (!isAuthor) {
-      return res.status(400).json('you are not the author');
-    }
-    await postDoc.update({
-      title,
-      summary,
-      content,
-      cover: newPath ? newPath : postDoc.cover,
-    });
 
+    if (!isAuthor) {
+      return res.status(403).json({ error: 'You are not the author' });
+    }
+
+    // Update fields directly and save
+    postDoc.title = title;
+    postDoc.summary = summary;
+    postDoc.content = content;
+    if (newPath) {
+      postDoc.cover = newPath;
+    }
+
+    await postDoc.save();
     res.json(postDoc);
   });
 });
@@ -181,3 +152,6 @@ app.get('/post/:id', async (req, res) => {
   const postDoc = await Post.findById(id).populate('author', ['username']);
   res.json(postDoc);
 });
+
+app.listen(4000);
+//

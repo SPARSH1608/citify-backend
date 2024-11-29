@@ -17,7 +17,7 @@ const secret = 'asdfe45we45w345wegw345werjktjwertkj';
 app.use(
   cors({
     credentials: true,
-    origin: 'http://localhost:5173',
+    origin: 'citify-frontend-dsu4xtmk5-sparsh1608.vercel.app',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders:
       'Content-Type, Authorization, X-Content-Type-Options, Accept, X-Requested-With, Origin, Access-Control-Request-Method, Access-Control-Request-Headers',
